@@ -43,20 +43,28 @@ namespace BulkyBook.Areas.Admin.Controllers
             //    })
             //};
             //return Json(productVM);
-            var subCategoryList = _unitOfWork.SubCategory.GetAll(1);
-            return Json(new { data = subCategoryList });
+            //var subCategoryList = _unitOfWork.SubCategory.GetAll(1);
+           // return Json(new { data = subCategoryList });
+             var data = _unitOfWork.SubCategory.GetAll(catId)
+                .Where(x => x.CategoryId == catId)
+                .Select(x => new { Value = x.Id, Text = x.Name });
+            return Json(data);
         }
         public JsonResult GetMiniCategory(int subCateId)
         {
-            ProductVM productVM = new ProductVM()
-            {
-                SubssList = _unitOfWork.Subss.GetSubCate(subCateId).Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                })
-            };
-            return Json(productVM);
+           // ProductVM productVM = new ProductVM()
+          //  {
+           //     SubssList = _unitOfWork.Subss.GetSubCate(subCateId).Select(i => new SelectListItem
+            //    {
+           //         Text = i.Name,
+            //        Value = i.Id.ToString()
+           //     })
+           // };
+           // return Json(productVM);
+            var data = _unitOfWork.Subss.GetSubCate(subCateId)
+                .Where(x => x.SubCategoryId == subCateId)
+                .Select(x => new { Value = x.Id, Text = x.Name });
+            return Json(data);
         }
         public IActionResult Upsert(int? id)
         {

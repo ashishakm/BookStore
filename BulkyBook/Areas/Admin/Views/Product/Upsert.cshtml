@@ -11,7 +11,7 @@
         {
             //edit
             title = "Edit Product";
-            <input type="hidden" asp-for="Product.Id" />
+        <input type="hidden" asp-for="Product.Id" />
         }
         <div class="col-12 border-bottom">
             <h2 class="text-primary">@title</h2>
@@ -109,10 +109,10 @@
             </div>
             <div class="form-group row">
                 <div class="col-4">
-                   SubCategory
+                    SubCategory
                 </div>
                 <div class="col-8">
-                    @Html.DropDownListFor(m => m.Product.SubCategoryId, Model.SubCategoryList, "-Select a Category",
+                    @Html.DropDownListFor(m => m.Product.SubCategoryId, new List<SelectListItem>(), "-Select a Category",
                    new { @class = "form-control" })
                     <span asp-validation-for="Product.SubCategoryId" class="text-danger"></span>
                 </div>
@@ -122,7 +122,7 @@
                     MiniCategory
                 </div>
                 <div class="col-8">
-                    @Html.DropDownListFor(m => m.Product.SubSubId, Model.SubssList, "-Select a Category",
+                    @Html.DropDownListFor(m => m.Product.SubSubId, new List<SelectListItem>(), "-Select a Category",
                    new { @class = "form-control" })
                     <span asp-validation-for="Product.SubSubId" class="text-danger"></span>
                 </div>
@@ -139,27 +139,43 @@
                 <div class="col-8 offset-4">
                     @if (Model.Product.Id != 0)
                     {
-                        <partial name="_EditAndBackToListButton" model="Model.Product.Id" />
+                    <partial name="_EditAndBackToListButton" model="Model.Product.Id" />
                     }
                     else
                     {
-                        <div class="row">
-                            <div class="col">
-                                <button type="submit" onclick="return validateInput()" class="btn btn-primary form-control">Create</button>
-                            </div>
-                            <div class="col">
-                                <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
-                            </div>
+                    <div class="row">
+                        <div class="col">
+                            <button type="submit" onclick="return validateInput()" class="btn btn-primary form-control">Create</button>
                         </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
+                        </div>
+                    </div>
                     }
                 </div>
             </div>
+
+            @*<div>
+                    @Html.LabelFor(m => m.SelectedCategory)
+                    @Html.DropDownListFor(m => m.SelectedCategory, Model.CityList, "Please select")
+                    @Html.ValidationMessageFor(m => m.SelectedCategory)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.SelectedLocality)
+                    @Html.DropDownListFor(m => m.SelectedLocality, Model.LocalityList)
+                    @Html.ValidationMessageFor(m => m.SelectedLocality)
+                </div>
+                <div>
+                    @Html.LabelFor(m => m.SelectedSubLocality)
+                    @Html.DropDownListFor(m => m.SelectedSubLocality, Model.SubLocalityList)
+                    @Html.ValidationMessageFor(m => m.SelectedSubLocality)
+                </div>*@
         </div>
         @if (Model.Product.Id != 0)
         {
-            <div class="col-3 offset-1 pt-4">
-                <img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
-            </div>
+        <div class="col-3 offset-1 pt-4">
+            <img src="@Model.Product.ImageUrl" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+        </div>
         }
     </div>
 </form>
@@ -170,50 +186,51 @@
 
     <script>
 
-    tinymce.init({
-        selector: 'textarea',
-        plugins: 'lists',
-        menubar: 'file edit format'
-    });
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'lists',
+            menubar: 'file edit format'
+        });
 
 
-    function validateInput() {
-        if (document.getElementById("uploadBox").value == "") {
-            swal("Error", "Please select an image", "error");
-            return false;
-        }
-        return true;
-    };
+        function validateInput() {
+            if (document.getElementById("uploadBox").value == "") {
+                swal("Error", "Please select an image", "error");
+                return false;
+            }
+            return true;
+        };
 
     </script>
-<script>
-    $(function () {
-        $("#Product_CategoryId").change(function () {
-            debugger;
-            $.getJSON("/Admin/Product/GetSubCategory", { catId: $("#Product_CategoryId").val() }, function (d) {
-                alert(d);
-                var row = "";
-                //$("#Product_SubCategoryId").empty();
-                $.each(d, function (i, v) {
-                    row += "<option value=" + v.value + ">" + v.text + "</option>";
-                    alert(v.value);
-                });
+    <script>
+        $(function () {
+            $("#Product_CategoryId").change(function () {
+                // debugger;
+                $.getJSON("/Admin/Product/GetSubCategory", { catId: $("#Product_CategoryId").val() }, function (d) {
+                    debugger;
 
-                $("#Product_SubCategoryId").html(row);
+                    var row = "";
+                    //$("#Product_SubCategoryId").empty();
+                    $.each(d, function (i, v) {
+                        row += "<option value=" + v.value + ">" + v.text + "</option>";
+                    });
+
+                    $("#Product_SubCategoryId").html(row);
+                })
+            })
+            $("#Product_SubCategoryId").change(function () {
+                debugger;
+                $.getJSON("/Admin/Product/GetMiniCategory", { subCateId: $("#Product_SubCategoryId").val() }, function (d) {
+                    var row = "";
+                    //$("#Product.SubSubId").empty();
+                    $.each(d, function (i, v) {
+                        row += "<option value=" + v.value + ">" + v.text + "</option>";
+                    });
+                    $("#Product_SubSubId").html(row);
+                })
             })
         })
-        $("#Product_SubCategoryId").change(function () {
-            debugger;
-            $.getJSON("/Admin/Product/GetMiniCategory", { subCateId: $("#Product_SubCategoryId").val() }, function (d) {
-                var row = "";
-                //$("#Product.SubSubId").empty();
-                $.each(d, function (i, v) {
-                    row += "<option value=" + v.value + ">" + v.text + "</option>";
-                });
-                $("#Product.SubSubId").html(row);
-            })
-        })
-    })
-</script>
+    </script>
+
     @*<script src="~/js/CascadingDropdown.js"></script>*@
 }
